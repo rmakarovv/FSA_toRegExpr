@@ -1,0 +1,9 @@
+Possible input:
+states=[0,1]
+alpha=[a,b]
+initial=[0]
+accepting=[1]
+trans=[0>a>0,0>b>1,1>a>1,1>b>1]
+
+Output:
+((a|eps)(a|eps)*(b)|(b))(({})(a|eps)*(b)|(a|b|eps))*(({})(a|eps)*(b)|(a|b|eps))|((a|eps)(a|eps)*(b)|(b))

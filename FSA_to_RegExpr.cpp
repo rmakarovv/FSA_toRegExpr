@@ -39,13 +39,13 @@ public:
     std::string name;
     std::vector<Transition> transitions;
 
-    State(){}
+    State() {}
 
     State(std::string n) {
         name = n;
     }
 
-    State(const State *s) {
+    State(const State* s) {
         this->name = s->name;
         this->transitions = s->transitions;
     }
@@ -64,8 +64,8 @@ bool operator == (const State& s1, const State& s2) {
 }
 
 
-void looped(string **reg, const int n) {
-    string **temp;
+void looped(string** reg, const int n) {
+    string** temp;
     temp = new string*[n];
     for (int i = 0; i < n; ++i) {
         temp[i] = new string[n];
@@ -100,6 +100,7 @@ string createRegExpr(vector<State> states, const State& initial, vector<State> f
         if (states[i] == initial)
             initialState = i;
     }
+
     if (initialState == -1) {
         return "initial state is not defined";
     }
@@ -125,7 +126,7 @@ string createRegExpr(vector<State> states, const State& initial, vector<State> f
     }
 
 
-    string **reg;
+    string** reg;
     reg = new string*[n];
     for (int i = 0; i < n; ++i) {
         reg[i] = new string[n];
@@ -151,6 +152,7 @@ string createRegExpr(vector<State> states, const State& initial, vector<State> f
         return "{}";
     } else if (regExprFinal[s - 1] == '|')
         regExprFinal = regExprFinal.substr(0, s - 1);
+
     return regExprFinal;
 }
 
@@ -159,7 +161,7 @@ class CheckForErrors {
     // This class is created to store all functions to detect errors
 public:
 
-    CheckForErrors(){}
+    CheckForErrors() {}
 
     // Check for E0
     static bool inputFileIsMalformed(string states, string alpha, string init, string fin, string trans) {
@@ -184,7 +186,7 @@ public:
     // Check for E5
     static bool nondeterminism(const vector<Transition>& transitions) {
         vector<Transition> toCheck;
-        for (const Transition &el : transitions) {
+        for (const Transition& el : transitions) {
             // If the transition with the same "from" state and "command" is found
             // then FSA is nondeterministic.
             // In the class Transition operator "==" is overloaded specially for this comparison
@@ -238,9 +240,10 @@ public:
 };
 
 // This function is used to simplify "main" and parse input states
-void produceStates(vector<State> &states, string statesString){
+void produceStates(vector<State>& states, string statesString) {
     vector<string> words;
     int i = 7;
+
     if (statesString[i] == '[') {
         i++;
         while (i < statesString.length() && statesString[i] != ']') {
@@ -269,17 +272,18 @@ void produceCommands(string alpha, int i, vector<string> &possibleCommands) {
         while (alpha[i] != ']') {
             i++;
             string word = "";
+
             while (alpha[i] != ',' && alpha[i] != ']') {
                 word += alpha[i];
                 i++;
             }
+
             possibleCommands.push_back(word);
         }
     }
 }
 
-
-int main() {
+void work() {
     ifstream input("input.txt");
     ofstream output("output.txt");
 
@@ -294,8 +298,8 @@ int main() {
 
     bool malformed = CheckForErrors::inputFileIsMalformed(statesString, alpha, initialString, final, trans);
     if (!malformed) {
-        output << "Error:\nE0: Input file is malformed";
-        return 0;
+      output << "Error:\nE0: Input file is malformed";
+      return;
     }
 
     // Filling the states,
@@ -305,7 +309,7 @@ int main() {
 
     map<string, State*> statesMap;
     for (State &el : states) {
-        statesMap[el.name] = &el;
+      statesMap[el.name] = &el;
     }
 
     // filling possible transitions
@@ -317,13 +321,13 @@ int main() {
     i = 9;
     // Check for Error E4
     if (initialString[9] == ']') {
-        output << "Error:\nE4: Initial state is not defined";
-        return 0;
+      output << "Error:\nE4: Initial state is not defined";
+      return;
     }
     string word = "";
     while (initialString[i] != ']') {
-        word += initialString[i];
-        i++;
+      word += initialString[i];
+      i++;
     }
     State initial(word);
 
@@ -332,20 +336,20 @@ int main() {
     word = "";
     vector<string> accepting;
     while (final[i] != ']') {
-        while (final[i] != ',' && final[i] != ']') {
-            word += final[i];
-            i++;
-        }
-        if (!word.empty()) {
-            accepting.push_back(word);
-        }
-        word = "";
-        if (final[i] != ']') i++;
+      while (final[i] != ',' && final[i] != ']') {
+          word += final[i];
+          i++;
+      }
+      if (!word.empty()) {
+          accepting.push_back(word);
+      }
+      word = "";
+      if (final[i] != ']') i++;
     }
     vector<State> finalStates;
     for (auto & ii : accepting) {
-        State state(ii);
-        finalStates.push_back(state);
+      State state(ii);
+      finalStates.push_back(state);
     }
 
 
@@ -357,77 +361,79 @@ int main() {
     set<string> statesInTransitions;
     word = "";
     string tr = "", st = "";
+    
     while (trans[i] != ']') {
-        while ( trans[i] != '>') {
-            word += trans[i];
-            i++;
-        }
-        i++;
-        while ( trans[i] != '>') {
-            tr += trans[i];
-            i++;
-        }
-        i++;
-        while ( trans[i] != ',' && trans[i] != ']') {
-            st += trans[i];
-            i++;
-        }
-        if (trans[i] != ']') i++;
-        statesInTransitions.insert(word);
-        statesInTransitions.insert(st);
-        Transition transition(tr, statesMap[word], statesMap[st]);
-        allTransitions.push_back(transition);
-        transitions[word].push_back(transition);
+      while ( trans[i] != '>') {
+          word += trans[i];
+          i++;
+      }
+      i++;
+      while ( trans[i] != '>') {
+          tr += trans[i];
+          i++;
+      }
+      i++;
+      while ( trans[i] != ',' && trans[i] != ']') {
+          st += trans[i];
+          i++;
+      }
+      if (trans[i] != ']') i++;
+        
+      statesInTransitions.insert(word);
+      statesInTransitions.insert(st);
+      Transition transition(tr, statesMap[word], statesMap[st]);
+      allTransitions.push_back(transition);
+      transitions[word].push_back(transition);
 
-        word = "", tr = "", st = "";
+      word = "", tr = "", st = "";
     }
 
     // Filling states with transitions
     for (State &state : states) {
-        state.transitions = transitions[state.name];
+      state.transitions = transitions[state.name];
     }
 
 
     // Check for the Error E3
     for (Transition const &el : allTransitions) {
-        if (find(possibleTransitions.begin(), possibleTransitions.end(), el.command) == possibleTransitions.end()) {
-            output << "Error:\nE3: A transition '" <<  el.command << "' is not represented in the alphabet";
-            return 0;
-        }
+      if (find(possibleTransitions.begin(), possibleTransitions.end(), el.command) == possibleTransitions.end()) {
+          output << "Error:\nE3: A transition '" <<  el.command << "' is not represented in the alphabet";
+          return;
+      }
     }
 
     // Checking that all states in transitions final states and initial state exist.
     // Error E1
     if (!CheckForErrors::checkStates(states, statesInTransitions, initial, finalStates, output)) {
-        return 0;
+      return;
     }
 
     // Checking Error E5: Nondeterminism
     if (CheckForErrors::nondeterminism(allTransitions)) {
-        output << "Error:\nE5: FSA is nondeterministic";
-        return 0;
+      output << "Error:\nE5: FSA is nondeterministic";
+      return;
     }
 
 
     // Updating information about initial state after transitions were added.
     for (State &sta : states) {
-        if (sta.name == initial.name) {
-            initial = sta;
-            break;
-        }
+      if (sta.name == initial.name) {
+          initial = sta;
+          break;
+      }
     }
 
     // This is the check for disjoint states Error E2
     set<State> statesFound;
     errorChecker.DFS(initial, statesFound);
     if (statesFound.size() < states.size()) {
-        output << "Error:\nE2: Some states are disjoint";
-        return 0;
+      output << "Error:\nE2: Some states are disjoint";
+      return;
     }
 
 
     for (auto const& el : transitions) {
-        statesMap[el.first]->transitions = el.second;
+      statesMap[el.first]->transitions = el.second;
     }
 
 
@@ -435,13 +441,17 @@ int main() {
 
     // Check for the Error E4: not defined initial state
     if (answer == "initial state is not defined") {
-        output << "Error:\nE4: Initial state is not defined";
-        return 0;
+      output << "Error:\nE4: Initial state is not defined";
+      return;
     }
+    
     output << answer;
 
     input.close();
     output.close();
+}
 
+int main() {
+    work();
     return 0;
 }
